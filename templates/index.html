@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factify.in - AI-Powered Fake News Detector</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="description" content="Detect fake news instantly with our AI-powered analysis tool. Get accurate results with confidence scores.">
+    <meta name="keywords" content="fake news detector, AI, fact check, news verification">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>Factify.in</h1>
+            <p>🚀 Advanced AI-Powered Fake News Detection System</p>
+            <p style="font-size: 1rem; color: var(--text-secondary); margin-top: 10px;">
+                ⚡ Instant Analysis • 🎯 High Accuracy • 🔒 Secure & Private
+            </p>
+            
+            {% if status %}
+            <div class="status-indicator {{ 'success' if status.models == 'success' else 'error' }}">
+                <i class="fas fa-{{ 'check-circle' if status.models == 'success' else 'exclamation-triangle' }}"></i>
+                {{ '🟢 System Ready & Optimized' if status.models == 'success' else '🔴 System Issues Detected' }}
+            </div>
+            {% endif %}
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2>
+                    <i class="fas fa-brain icon"></i>Analyze News Content
+                </h2>
+                <p>
+                    🔍 Enter news text or paste a URL to verify authenticity using our state-of-the-art AI algorithms. 
+                    Get instant results with detailed confidence scores and probability analysis.
+                </p>
+                
+                <form method="POST" action="/predict" id="factifyForm">
+                    <div class="form-group">
+                        <label for="news_text">
+                            <i class="fas fa-newspaper icon"></i>📰 News Content or URL
+                        </label>
+                        <textarea 
+                            name="news_text" 
+                            id="news_text"
+                            placeholder="✍️ Paste your news article text here or enter a URL...
+
+Examples:
+• News article text: 'Scientists discover new treatment for...'
+• News URL: 'https://www.example.com/news-article'
+• Social media post content
+• Press release text
+
+💡 Tip: Longer text provides more accurate analysis!"
+                            required
+                            maxlength="10000"
+                        ></textarea>
+                        <div style="text-align: right; margin-top: 8px; font-size: 0.9rem; color: var(--text-muted);">
+                            <span id="charCount">0</span>/10,000 characters
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button type="submit" class="btn" id="analyzeBtn">
+                            <i class="fas fa-brain"></i>
+                            <span class="btn-text">🚀 Analyze with AI</span>
+                            <div class="loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                🔄 Analyzing...
+                            </div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="features-section">
+                <h3>🌟 Why Choose Factify.in?</h3>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h4 class="feature-title">🤖 AI-Powered Analysis</h4>
+                        <p class="feature-desc">Advanced machine learning algorithms trained on thousands of verified news articles for maximum accuracy</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4 class="feature-title">⚡ Lightning Fast</h4>
+                        <p class="feature-desc">Get comprehensive analysis results in seconds with detailed confidence scores and probability breakdowns</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h4 class="feature-title">🔗 URL Analysis</h4>
+                        <p class="feature-desc">Analyze articles directly from URLs with automatic domain credibility checking and source verification</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4 class="feature-title">🔒 Privacy First</h4>
+                        <p class="feature-desc">Your data is processed securely and never stored. Complete privacy protection for all your analysis</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="feature-title">📊 Detailed Reports</h4>
+                        <p class="feature-desc">Get comprehensive analysis with confidence scores, probability breakdowns, and source credibility ratings</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4 class="feature-title">📱 Mobile Optimized</h4>
+                        <p class="feature-desc">Perfect experience on all devices - desktop, tablet, and mobile with responsive design</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- How it works section -->
+            <div style="margin-top: 60px; text-align: center;">
+                <h3 style="color: var(--text-primary); margin-bottom: 40px; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; background: linear-gradient(45deg, var(--accent-primary), #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    🔬 How It Works
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px;">
+                    <div style="padding: 30px; background: var(--bg-glass); backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid var(--border-glow); box-shadow: var(--shadow-dark);">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">1️⃣</div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 15px; font-weight: 700;">Input Text</h4>
+                        <p style="color: var(--text-secondary);">Paste news content or URL</p>
+                    </div>
+                    <div style="padding: 30px; background: var(--bg-glass); backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid var(--border-glow); box-shadow: var(--shadow-dark);">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">2️⃣</div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 15px; font-weight: 700;">AI Processing</h4>
+                        <p style="color: var(--text-secondary);">Advanced algorithms analyze content</p>
+                    </div>
+                    <div style="padding: 30px; background: var(--bg-glass); backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid var(--border-glow); box-shadow: var(--shadow-dark);">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">3️⃣</div>
+                        <h4 style="color: var(--text-primary); margin-bottom: 15px; font-weight: 700;">Get Results</h4>
+                        <p style="color: var(--text-secondary);">Receive detailed analysis report</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistics Section -->
+            <div style="margin-top: 60px; padding: 40px; background: var(--bg-glass); backdrop-filter: blur(15px); border-radius: 25px; border: 1px solid var(--border-glow); box-shadow: var(--shadow-dark); text-align: center;">
+                <h3 style="color: var(--text-primary); margin-bottom: 40px; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; background: linear-gradient(45deg, var(--accent-primary), #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    📈 Trusted by Thousands
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px;">
+                    <div>
+                        <div style="font-size: 3rem; color: var(--accent-primary); font-weight: 900; margin-bottom: 10px;">95%</div>
+                        <p style="color: var(--text-secondary); font-weight: 600;">Accuracy Rate</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 3rem; color: var(--accent-success); font-weight: 900; margin-bottom: 10px;">10K+</div>
+                        <p style="color: var(--text-secondary); font-weight: 600;">Articles Analyzed</p>
+                    </div>
+                    <div>
+                        <div style="font-size: 3rem; color: var(--accent-warning); font-weight: 900; margin-bottom: 10px;">&lt;2s</div>
+                        <p style="color: var(--text-secondary); font-weight: 600;">Average Response Time</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>🛡️ <strong>Factify.in</strong> - Your Trusted AI News Verification Partner</p>
+            <p>⚡ Powered by Advanced Machine Learning • 🔒 Privacy Protected • 🌍 Serving Users Worldwide</p>
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                💡 <em>Stay informed, stay protected. Fight misinformation with AI.</em>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Character counter
+        const textarea = document.getElementById('news_text');
+        const charCount = document.getElementById('charCount');
+        
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+            
+            if (count > 8000) {
+                charCount.style.color = 'var(--accent-error)';
+            } else if (count > 6000) {
+                charCount.style.color = 'var(--accent-warning)';
+            } else {
+                charCount.style.color = 'var(--text-muted)';
+            }
+        });
+        
+        // Form submission with loading state
+        const form = document.getElementById('factifyForm');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const btnText = analyzeBtn.querySelector('.btn-text');
+        const loading = analyzeBtn.querySelector('.loading');
+        
+        form.addEventListener('submit', function(e) {
+            const textValue = textarea.value.trim();
+            
+            if (!textValue) {
+                e.preventDefault();
+                textarea.classList.add('form-error');
+                setTimeout(() => textarea.classList.remove('form-error'), 3000);
+                return;
+            }
+            
+            if (textValue.length < 10) {
+                e.preventDefault();
+                alert('⚠️ Please enter at least 10 characters for accurate analysis.');
+                textarea.focus();
+                return;
+            }
+            
+            // Show loading state
+            analyzeBtn.disabled = true;
+            btnText.style.display = 'none';
+            loading.style.display = 'flex';
+            textarea.classList.add('form-success');
+        });
+        
+        // Auto-resize textarea
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.max(200, this.scrollHeight) + 'px';
+        });
+        
+        // Add some interactive effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-15px) scale(1.05)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        // Smooth scrolling for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>

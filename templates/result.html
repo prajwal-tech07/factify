@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results - Factify.in</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="description" content="Fake news analysis results from Factify.in AI-powered detection system.">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>Factify.in</h1>
+            <p>🔍 Analysis Complete - Results Ready</p>
+            <p style="font-size: 1rem; color: var(--text-secondary); margin-top: 10px;">
+                📊 Detailed Report Generated on {{ result.timestamp }}
+            </p>
+        </header>
+
+        <main>
+            <div class="result-container">
+                <h2>
+                    <i class="fas fa-chart-line icon"></i>Analysis Results
+                </h2>
+                
+                <!-- Main Result Box -->
+                <div class="result-box {{ result.status }}">
+                    <h3>
+                        {% if result.status == 'real' %}
+                            <i class="fas fa-check-circle"></i> {{ result.prediction }}
+                        {% elif result.status == 'fake' %}
+                            <i class="fas fa-times-circle"></i> {{ result.prediction }}
+                        {% else %}
+                            <i class="fas fa-exclamation-triangle"></i> {{ result.prediction }}
+                        {% endif %}
+                    </h3>
+                    
+                    <!-- Confidence Meter -->
+                    <div class="confidence-meter">
+                        <div class="confidence-label">
+                            🎯 Confidence Level
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill {{ result.status }}" 
+                                 style="width: {{ result.confidence }}%"></div>
+                        </div>
+                        <div class="confidence-text {{ result.status }}">
+                            {{ "%.1f"|format(result.confidence) }}%
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Note -->
+                    <div class="analysis-note {{ result.status }}">
+                        {% if result.status == 'real' %}
+                            ✅ <strong>Likely Authentic:</strong> This content shows characteristics of genuine news reporting with high confidence.
+                        {% elif result.status == 'fake' %}
+                            ❌ <strong>Potentially Misleading:</strong> This content exhibits patterns commonly found in misinformation.
+                        {% elif result.status == 'warning' %}
+                            ⚠️ <strong>Analysis Limited:</strong> {{ result.debug_note }}
+                        {% else %}
+                            🔧 <strong>Processing Issue:</strong> {{ result.debug_note }}
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Probability Details -->
+                <div class="probability-details">
+                    <h3>
+                        <i class="fas fa-percentage icon"></i>📊 Probability Breakdown
+                    </h3>
+                    <div class="probability-grid">
+                        <div class="prob-item fake">
+                            <div class="prob-label">
+                                <i class="fas fa-times-circle"></i> Fake News Probability
+                            </div>
+                            <div class="prob-value">{{ "%.1f"|format(result.fake_probability) }}%</div>
+                        </div>
+                        <div class="prob-item real">
+                            <div class="prob-label">
+                                <i class="fas fa-check-circle"></i> Real News Probability
+                            </div>
+                            <div class="prob-value">{{ "%.1f"|format(result.real_probability) }}%</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interpretation Guide -->
+                    <div style="margin-top: 30px; padding: 25px; background: var(--bg-secondary); border-radius: 15px; border-left: 4px solid var(--accent-primary);">
+                        <h4 style="color: var(--text-primary); margin-bottom: 15px; font-weight: 700;">
+                            <i class="fas fa-info-circle"></i> How to Interpret These Results
+                        </h4>
+                        <div style="color: var(--text-secondary); line-height: 1.8;">
+                            <p style="margin-bottom: 10px;">
+                                <strong>🎯 High Confidence (80%+):</strong> Very reliable prediction
+                            </p>
+                            <p style="margin-bottom: 10px;">
+                                <strong>⚖️ Medium Confidence (60-80%):</strong> Good prediction, consider additional verification
+                            </p>
+                            <p>
+                                <strong>❓ Low Confidence (&lt;60%):</strong> Uncertain prediction, manual fact-checking recommended
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- News Text Display -->
+                <div class="news-text">
+                    <h3>
+                        <i class="fas fa-newspaper icon"></i>📰 Analyzed Content
+                    </h3>
+                    <p>{{ result.text }}</p>
+                </div>
+                
+                <!-- Additional Details -->
+                <div class="additional-details">
+                    <h3>
+                        <i class="fas fa-info-circle icon"></i>🔍 Additional Information
+                    </h3>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-globe"></i> Source Domain
+                        </span>
+                        <span class="detail-value">{{ result.domain }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-shield-alt"></i> Credible Domain
+                        </span>
+                        <span class="detail-value" style="color: {{ 'var(--accent-success)' if result.credible_domain == 'Yes' else 'var(--accent-error)' }}">
+                            {{ result.credible_domain }}
+                            {% if result.credible_domain == 'Yes' %}
+                                <i class="fas fa-check-circle"></i>
+                            {% else %}
+                                <i class="fas fa-times-circle"></i>
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-clock"></i> Analysis Time
+                        </span>
+                        <span class="detail-value">{{ result.timestamp }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-cogs"></i> System Status
+                        </span>
+                        <span class="detail-value">{{ result.debug_note }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-chart-bar"></i> Content Length
+                        </span>
+                        <span class="detail-value">{{ result.text|length }} characters</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-brain"></i> AI Model
+                        </span>
+                        <span class="detail-value">Logistic Regression + TF-IDF</span>
+                    </div>
+                </div>
+                
+                <!-- Recommendations -->
+                <div style="background: var(--bg-glass); backdrop-filter: blur(20px); border-radius: 25px; padding: 40px; margin-bottom: 40px; border: 1px solid var(--border-glow); box-shadow: var(--shadow-dark);">
+                    <h3 style="color: var(--text-primary); margin-bottom: 30px; font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 800; text-align: center;">
+                        <i class="fas fa-lightbulb icon"></i>💡 Recommendations
+                    </h3>
+                    
+                    {% if result.status == 'real' %}
+                        <div style="color: var(--text-secondary); line-height: 1.8; text-align: center;">
+                            <p style="margin-bottom: 15px;">✅ <strong>This content appears to be legitimate news.</strong></p>
+                            <p style="margin-bottom: 15px;">🔍 Always cross-reference with multiple trusted sources for important news</p>
+                            <p>📚 Consider the source's reputation and editorial standards</p>
+                        </div>
+                    {% elif result.status == 'fake' %}
+                        <div style="color: var(--text-secondary); line-height: 1.8; text-align: center;">
+                            <p style="margin-bottom: 15px;">⚠️ <strong>Exercise caution with this content.</strong></p>
+                            <p style="margin-bottom: 15px;">🔍 Verify claims through multiple reputable news sources</p>
+                            <p style="margin-bottom: 15px;">📊 Check fact-checking websites like Snopes, PolitiFact, or FactCheck.org</p>
+                            <p>🚫 Avoid sharing until verified through reliable sources</p>
+                        </div>
+                    {% else %}
+                        <div style="color: var(--text-secondary); line-height: 1.8; text-align: center;">
+                            <p style="margin-bottom: 15px;">🔧 <strong>Analysis was limited due to technical constraints.</strong></p>
+                            <p style="margin-bottom: 15px;">📝 Try providing more detailed text for better analysis</p>
+                            <p>🔍 Manual fact-checking is recommended for this content</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="/" class="btn">
+                        <i class="fas fa-plus"></i>
+                        🔄 Analyze Another Article
+                    </a>
+                    
+                    <button onclick="window.print()" class="btn btn-secondary">
+                        <i class="fas fa-print"></i>
+                        🖨️ Print Results
+                    </button>
+                    
+                    <button onclick="shareResults()" class="btn btn-secondary">
+                        <i class="fas fa-share-alt"></i>
+                        📤 Share Analysis
+                    </button>
+                </div>
+                
+                <!-- Warning Notice -->
+                <div style="margin-top: 50px; padding: 30px; background: linear-gradient(135deg, rgba(255, 230, 109, 0.1), rgba(245, 124, 0, 0.05)); border-radius: 20px; border: 2px solid var(--accent-warning); text-align: center;">
+                    <h4 style="color: var(--accent-warning); margin-bottom: 20px; font-weight: 800;">
+                        <i class="fas fa-exclamation-triangle"></i> Important Disclaimer
+                    </h4>
+                    <p style="color: var(--text-secondary); line-height: 1.8; font-size: 1.1rem;">
+                        🤖 This analysis is generated by AI and should be used as a <strong>supplementary tool</strong> only. 
+                        Always verify important information through multiple trusted sources and use critical thinking. 
+                        No AI system is 100% accurate, and context matters significantly in news verification.
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>🛡️ <strong>Factify.in</strong> - Your Trusted AI News Verification Partner</p>
+            <p>⚡ Analysis completed with advanced machine learning • 🔒 Your privacy is protected</p>
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                💡 <em>Stay informed, stay protected. Fight misinformation with AI.</em>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Animate confidence bar on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const confidenceFill = document.querySelector('.confidence-fill');
+            if (confidenceFill) {
+                confidenceFill.style.width = '0%';
+                setTimeout(() => {
+                    confidenceFill.style.width = '{{ result.confidence }}%';
+                }, 500);
+            }
+            
+            // Animate probability values
+            const probValues = document.querySelectorAll('.prob-value');
+            probValues.forEach((value, index) => {
+                const targetValue = parseFloat(value.textContent);
+                value.textContent = '0.0%';
+                
+                setTimeout(() => {
+                    animateValue(value, 0, targetValue, 2000);
+                }, 1000 + (index * 200));
+            });
+        });
+        
+        function animateValue(element, start, end, duration) {
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = start + (end - start) * progress;
+                
+                element.textContent = current.toFixed(1) + '%';
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+        
+        // Share functionality
+        function shareResults() {
+            const result = {
+                prediction: '{{ result.prediction }}',
+                confidence: '{{ "%.1f"|format(result.confidence) }}',
+                timestamp: '{{ result.timestamp }}'
+            };
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Factify.in Analysis Results',
+                    text: `News Analysis: ${result.prediction} (${result.confidence}% confidence) - Analyzed on ${result.timestamp}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const textArea = document.createElement('textarea');
+                textArea.value = `Factify.in Analysis Results:\n${result.prediction} (${result.confidence}% confidence)\nAnalyzed on ${result.timestamp}\n${window.location.href}`;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Show notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: var(--accent-success);
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    font-weight: bold;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease-out;
+                `;
+                notification.textContent = '📋 Results copied to clipboard!';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+        
+        // Add print styles
+        const printStyles = `
+            @media print {
+                body::before, body::after { display: none !important; }
+                .action-buttons { display: none !important; }
+                * { animation: none !important; }
+                .container { max-width: none !important; margin: 0 !important; padding: 10px !important; }
+            }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = printStyles;
+        document.head.appendChild(styleSheet);
+        
+        // Smooth scrolling
+        document.documentElement.style.scrollBehavior = 'smooth';
+        
+        // Add some interactive effects
+        document.querySelectorAll('.detail-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(10px)';
+                this.style.background = 'rgba(0, 212, 255, 0.1)';
+                this.style.paddingLeft = '15px';
+                this.style.borderRadius = '15px';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+                this.style.background = 'transparent';
+                this.style.paddingLeft = '0';
+                this.style.borderRadius = '0';
+            });
+        });
+    </script>
+</body>
+</html>
